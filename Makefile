@@ -25,7 +25,7 @@ REBAR=$(shell which rebar || echo ./rebar)
 
 DIRS=src
 
-all: deps compile
+all: deps web_compile compile
 
 check: compile dialyzer
 
@@ -49,3 +49,18 @@ doc:
 dialyzer:
 	$(REBAR) skip_deps=true dialyze
 
+######
+# ng-boilerplate
+######
+
+web_init:
+	git clone https://github.com/ngbp/ng-boilerplate.git webapp
+	cd webapp && git checkout v0.3.1-release && npm install && bower install
+	sed -i 's/compile_dir:.*/compile_dir: "..\/priv\/webapp",/1' webapp/build.config.js
+	mkdir -p priv/webapp
+
+web_compile:
+	cd webapp && grunt --force
+
+web_clean:
+	rm -rf priv/webapp
